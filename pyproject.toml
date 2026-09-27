@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "urlpipe"
+dynamic = ["version"]
+description = "Official Python client for the URLpipe API: turn a URL into Markdown, HTML, a screenshot, metadata, a summary, keywords, console errors or a Lighthouse audit."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "URLpipe", email = "contact@urlpipe.dev" }]
+maintainers = [{ name = "URLpipe", email = "contact@urlpipe.dev" }]
+keywords = ["urlpipe", "markdown", "screenshot", "html", "lighthouse", "web scraping", "llm", "api client"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+  "Framework :: AsyncIO",
+]
+dependencies = ["httpx>=0.23,<1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "mypy>=1.5"]
+
+[project.urls]
+Homepage = "https://urlpipe.dev"
+Documentation = "https://urlpipe.dev/docs"
+Source = "https://github.com/URLpipe/urlpipe-python"
+Changelog = "https://github.com/URLpipe/urlpipe-python/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "src/urlpipe/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/urlpipe"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/urlpipe", "tests", "README.md", "CHANGELOG.md", "LICENSE", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.mypy]
+strict = true
+files = ["src/urlpipe"]
