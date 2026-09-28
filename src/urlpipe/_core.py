@@ -94,6 +94,7 @@ class Config:
     api_key: str
     max_retries: int
     wait_timeout: float
+    user_agent: str = USER_AGENT
 
 
 # --------------------------------------------------------------------------- #
@@ -101,10 +102,17 @@ class Config:
 # --------------------------------------------------------------------------- #
 
 
-def base_headers(api_key: str) -> Dict[str, str]:
+def user_agent(product: Optional[str]) -> str:
+    """The User-Agent: the calling program's product token, when given, in
+    front of the client's own, as in ``my-app/1.2 urlpipe-python/0.2.0``."""
+    product = (product or "").strip()
+    return f"{product} {USER_AGENT}" if product else USER_AGENT
+
+
+def base_headers(config: Config) -> Dict[str, str]:
     return {
-        "Authorization": f"Bearer {api_key}",
-        "User-Agent": USER_AGENT,
+        "Authorization": f"Bearer {config.api_key}",
+        "User-Agent": config.user_agent,
         "Accept": "*/*",
     }
 
@@ -132,7 +140,7 @@ def build_analysis(
     if extra:
         body.update(extra)
 
-    headers = base_headers(config.api_key)
+    headers = base_headers(config)
     if idempotency_key is not None:
         headers["Idempotency-Key"] = idempotency_key
     elif config.max_retries > 0:
@@ -147,7 +155,7 @@ def build_analysis(
 def build_result_request(config: Config, token: str) -> HttpRequest:
     if not token:
         raise ValueError("token must be a non-empty string")
-    return HttpRequest("GET", f"/result/{quote(token, safe='')}", base_headers(config.api_key))
+    return HttpRequest("GET", f"/result/{quote(token, safe='')}", base_headers(config))
 
 
 # --------------------------------------------------------------------------- #

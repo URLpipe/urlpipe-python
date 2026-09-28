@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+- `user_agent=` on `Client` and `AsyncClient` names the program making the requests; the User-Agent then reads `<product> urlpipe-python/<version>`.
+
 ## 0.1.0 — 2026-09-25
 
 The first release.

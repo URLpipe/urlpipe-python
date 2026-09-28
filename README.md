@@ -198,6 +198,14 @@ except urlpipe.QuotaExceededError as error:
 
 A failed analysis costs nothing, and neither does a cache hit.
 
+## Identifying your program
+
+If you build a library or a tool on this client, pass its name, and your requests carry both:
+
+```python
+client = urlpipe.Client(user_agent="my-tool/1.4")  # User-Agent: my-tool/1.4 urlpipe-python/0.2.0
+```
+
 ## Retries and idempotency
 
 The client retries connection errors, rate limits (after `Retry-After`, up to 60 s), concurrency limits and 500/502/503 responses — twice by default, with exponential backoff. It never retries a 4xx other than those, or a spent quota.

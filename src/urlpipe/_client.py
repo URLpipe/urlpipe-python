@@ -36,6 +36,7 @@ class _BaseClient:
         timeout: float,
         max_retries: int,
         wait_timeout: float,
+        user_agent: Optional[str] = None,
     ) -> None:
         key = api_key if api_key is not None else os.environ.get("URLPIPE_API_KEY")
         if not key:
@@ -49,7 +50,12 @@ class _BaseClient:
         self.timeout = float(timeout)
         self.max_retries = max_retries
         self.wait_timeout = float(wait_timeout)
-        self._config = Config(api_key=key, max_retries=max_retries, wait_timeout=self.wait_timeout)
+        self._config = Config(
+            api_key=key,
+            max_retries=max_retries,
+            wait_timeout=self.wait_timeout,
+            user_agent=_core.user_agent(user_agent),
+        )
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(base_url={self.base_url!r})"
@@ -105,6 +111,9 @@ class Client(_BaseClient):
             one ``Idempotency-Key``, so a retry never runs or bills twice.
         wait_timeout: how long a call that outlives the API's 60 s sync window
             keeps polling for its result, and the default for :meth:`wait`.
+        user_agent: your program's product token, such as ``"my-app/1.2"``.
+            It goes in front of the client's own, so requests identify both:
+            ``my-app/1.2 urlpipe-python/0.2.0``.
         http_client: an ``httpx.Client`` to send requests with. You keep
             ownership: :meth:`close` leaves it open.
     """
@@ -117,9 +126,10 @@ class Client(_BaseClient):
         timeout: float = _core.DEFAULT_TIMEOUT,
         max_retries: int = _core.DEFAULT_MAX_RETRIES,
         wait_timeout: float = _core.DEFAULT_WAIT_TIMEOUT,
+        user_agent: Optional[str] = None,
         http_client: Optional[httpx.Client] = None,
     ) -> None:
-        super().__init__(api_key, base_url, timeout, max_retries, wait_timeout)
+        super().__init__(api_key, base_url, timeout, max_retries, wait_timeout, user_agent)
         self._owns_http = http_client is None
         self._http = http_client if http_client is not None else httpx.Client()
 
@@ -391,9 +401,10 @@ class AsyncClient(_BaseClient):
         timeout: float = _core.DEFAULT_TIMEOUT,
         max_retries: int = _core.DEFAULT_MAX_RETRIES,
         wait_timeout: float = _core.DEFAULT_WAIT_TIMEOUT,
+        user_agent: Optional[str] = None,
         http_client: Optional[httpx.AsyncClient] = None,
     ) -> None:
-        super().__init__(api_key, base_url, timeout, max_retries, wait_timeout)
+        super().__init__(api_key, base_url, timeout, max_retries, wait_timeout, user_agent)
         self._owns_http = http_client is None
         self._http = http_client if http_client is not None else httpx.AsyncClient()
 

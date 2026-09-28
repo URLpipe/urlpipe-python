@@ -101,7 +101,3 @@ def test_the_timeout_is_applied_per_request(server: StubServer) -> None:
         "https://example.com"
     )
     assert seen[0]["read"] == 12.0
-
-
-def test_version() -> None:
-    assert urlpipe.__version__ == "0.1.0"

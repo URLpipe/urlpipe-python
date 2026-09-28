@@ -394,3 +394,21 @@ def test_d1_idempotent_replayed_is_false_without_the_header(
 ) -> None:
     server.reply(200, "ok")
     assert client.markdown("https://example.com").meta.idempotent_replayed is False
+
+
+def test_user_agent_names_the_calling_program(make_client: Any, server: StubServer) -> None:
+    server.reply(200, "# Example Domain\n", headers=META_HEADERS)
+
+    make_client(user_agent="langchain-urlpipe/0.1.1").markdown("https://example.com")
+
+    [req] = server.requests
+    assert req.headers["user-agent"] == f"langchain-urlpipe/0.1.1 urlpipe-python/{urlpipe.__version__}"
+
+
+def test_a_blank_user_agent_keeps_the_default(make_client: Any, server: StubServer) -> None:
+    server.reply(200, "# Example Domain\n", headers=META_HEADERS)
+
+    make_client(user_agent="  ").markdown("https://example.com")
+
+    [req] = server.requests
+    assert req.headers["user-agent"] == f"urlpipe-python/{urlpipe.__version__}"
