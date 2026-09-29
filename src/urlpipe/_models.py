@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Generic, Literal, Optional, TypedDict, TypeVar, Union
+from typing import Any, Dict, Generic, List, Literal, Optional, TypedDict, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -32,18 +32,117 @@ class ConsoleEntry(TypedDict):
     text: str
 
 
-class PageMeta(TypedDict, total=False):
-    """What ``/meta`` returns. Any field can be ``None``."""
+class MetaAuthor(TypedDict):
+    """One author of the page."""
+
+    name: str
+    url: Optional[str]
+    profiles: List[str]
+
+
+class MetaImage(TypedDict):
+    """The page's share image, with what the page declares about it."""
+
+    url: str
+    width: Optional[int]
+    height: Optional[int]
+    alt: Optional[str]
+    type: Optional[str]
+
+
+class MetaVideo(TypedDict):
+    """The page's video."""
+
+    url: str
+    type: Optional[str]
+    width: Optional[int]
+    height: Optional[int]
+
+
+class MetaIcon(TypedDict):
+    """An icon the page declares."""
+
+    url: str
+    rel: str
+    sizes: Optional[str]
+    type: Optional[str]
+
+
+class MetaFeed(TypedDict):
+    """An RSS, Atom or JSON feed."""
+
+    url: str
+    type: Optional[str]
+    title: Optional[str]
+
+
+class MetaRobots(TypedDict):
+    """Whether search engines may index the page and follow its links."""
+
+    index: bool
+    follow: bool
+
+
+class MetaOpenGraph(TypedDict):
+    """The page's og: tags, as declared."""
 
     title: Optional[str]
     description: Optional[str]
+    image: Optional[str]
+    url: Optional[str]
+    type: Optional[str]
+    site_name: Optional[str]
+    locale: Optional[str]
+
+
+class MetaTwitter(TypedDict):
+    """The page's twitter: tags, as declared."""
+
+    card: Optional[str]
+    site: Optional[str]
+    creator: Optional[str]
+    title: Optional[str]
+    description: Optional[str]
+    image: Optional[str]
+
+
+class MetaAlternate(TypedDict):
+    """The page in another language."""
+
+    hreflang: str
+    url: str
+
+
+class PageMeta(TypedDict):
+    """What ``/meta`` returns. Every key is always present; a value the page
+    doesn't declare is ``None`` or an empty list. URLs are absolute, dates ISO 8601."""
+
+    canonical_url: Optional[str]
+    title: Optional[str]
+    description: Optional[str]
+    site_name: Optional[str]
+    type: Optional[str]
     language: Optional[str]
-    main_image_url: Optional[str]
+    locale: Optional[str]
+    authors: List[MetaAuthor]
+    published_at: Optional[str]
+    modified_at: Optional[str]
+    image: Optional[MetaImage]
+    video: Optional[MetaVideo]
     favicon_url: Optional[str]
-    author_name: Optional[str]
-    feed_url: Optional[str]
-    publication_date: Optional[str]
-    additional_author_information: Optional[Dict[str, Any]]
+    icons: List[MetaIcon]
+    logo_url: Optional[str]
+    feeds: List[MetaFeed]
+    keywords: List[str]
+    theme_color: Optional[str]
+    generator: Optional[str]
+    manifest_url: Optional[str]
+    robots: MetaRobots
+    open_graph: MetaOpenGraph
+    twitter: MetaTwitter
+    alternates: List[MetaAlternate]
+    oembed_url: Optional[str]
+    structured_data_types: List[str]
 
 
 class ScrapeOperationResult(TypedDict, total=False):

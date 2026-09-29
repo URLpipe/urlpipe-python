@@ -52,7 +52,7 @@ Every method takes the URL first; everything else is an optional keyword.
 client.markdown("https://example.com").data      # str: the main content as Markdown
 client.html("https://example.com").data          # str: the HTML after JavaScript ran
 client.summarize("https://example.com").data     # str: an AI summary, in Markdown
-client.meta("https://example.com").data          # dict: title, description, language, author, …
+client.meta("https://example.com").data          # dict: title, description, image, authors, published_at, …
 client.keywords("https://example.com").data      # list[str], most relevant first
 client.console("https://example.com").data       # [{"type": "error", "text": "…"}, …]
 client.lighthouse("https://example.com", device="desktop", include_audits=True).data

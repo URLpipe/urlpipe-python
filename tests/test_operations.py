@@ -46,15 +46,63 @@ def test_text_operations(client: Any, server: StubServer, operation: str) -> Non
         (
             "meta",
             {
+                "canonical_url": "https://example.com/",
                 "title": "Example Domain",
                 "description": "Illustrative examples.",
+                "site_name": None,
+                "type": "website",
                 "language": "en",
-                "main_image_url": None,
+                "locale": "en",
+                "authors": [],
+                "published_at": None,
+                "modified_at": None,
+                "image": {
+                    "url": "https://example.com/cover.jpg",
+                    "width": 1200,
+                    "height": 630,
+                    "alt": None,
+                    "type": None
+                },
+                "video": None,
                 "favicon_url": "https://example.com/favicon.ico",
-                "author_name": None,
-                "feed_url": None,
-                "publication_date": None,
-                "additional_author_information": None,
+                "icons": [
+                    {
+                        "url": "https://example.com/favicon.ico",
+                        "rel": "icon",
+                        "sizes": None,
+                        "type": None
+                    }
+                ],
+                "logo_url": None,
+                "feeds": [],
+                "keywords": [],
+                "theme_color": None,
+                "generator": None,
+                "manifest_url": None,
+                "robots": {
+                    "index": True,
+                    "follow": True
+                },
+                "open_graph": {
+                    "title": "Example Domain",
+                    "description": None,
+                    "image": "https://example.com/cover.jpg",
+                    "url": None,
+                    "type": "website",
+                    "site_name": None,
+                    "locale": None
+                },
+                "twitter": {
+                    "card": None,
+                    "site": None,
+                    "creator": None,
+                    "title": None,
+                    "description": None,
+                    "image": None
+                },
+                "alternates": [],
+                "oembed_url": None,
+                "structured_data_types": []
             },
         ),
         ("keywords", ["example domain", "documentation"]),
