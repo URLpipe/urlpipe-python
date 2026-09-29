@@ -195,6 +195,7 @@ def parse_meta(headers: httpx.Headers) -> ResponseMeta:
         ),
         concurrency_limit=_int_or_given(headers.get("x-concurrency-limit")),
         result_url=headers.get("x-result-url"),
+        final_url=headers.get("x-final-url"),
         idempotent_replayed=replayed is not None and replayed.strip().lower() == "true",
     )
 

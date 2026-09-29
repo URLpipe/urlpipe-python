@@ -46,6 +46,7 @@ def test_text_operations(client: Any, server: StubServer, operation: str) -> Non
         (
             "meta",
             {
+                "final_url": "https://example.com/",
                 "canonical_url": "https://example.com/",
                 "title": "Example Domain",
                 "description": "Illustrative examples.",
@@ -126,6 +127,7 @@ def test_json_operations(client: Any, server: StubServer, operation: str, payloa
 def test_scrape(client: Any, server: StubServer) -> None:
     payload = {
         "url": "https://example.com",
+        "final_url": "https://example.com/",
         "operations": {
             "markdown": {"success": True, "result": "# Hi", "cached": False},
             "meta": {"success": False, "error": "The page is too big to be processed.",
@@ -265,6 +267,7 @@ def test_response_meta_from_headers(client: Any, server: StubServer) -> None:
             "X-Quota-Reset": "2026-08-31T23:59:59Z",
             "X-Concurrency-Limit": "unlimited",
             "X-Labels": '{"client":"acme","city":"M\\u00e1laga"}',
+            "X-Final-Url": "https://www.example.com/en/",
             "Idempotent-Replayed": "true",
         },
     )
@@ -286,6 +289,7 @@ def test_response_meta_from_headers(client: Any, server: StubServer) -> None:
         ),
         concurrency_limit="unlimited",
         result_url=None,
+        final_url="https://www.example.com/en/",
         idempotent_replayed=True,
     )
 

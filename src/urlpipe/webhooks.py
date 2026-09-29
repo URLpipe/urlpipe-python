@@ -55,7 +55,8 @@ def verify_webhook(
     Deliveries signed more than ``tolerance`` seconds ago (or ahead) are refused.
 
     Returns the parsed payload: ``token``, ``operation``, ``labels``,
-    ``success``, ``result``, ``result_url``, ``error`` and ``meta``.
+    ``success``, ``result``, ``result_url``, ``final_url`` (where the page
+    ended up, after its redirects), ``error`` and ``meta``.
 
     Raises:
         WebhookVerificationError: with the reason the delivery was refused.

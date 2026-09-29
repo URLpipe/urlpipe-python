@@ -115,8 +115,12 @@ class MetaAlternate(TypedDict):
 
 class PageMeta(TypedDict):
     """What ``/meta`` returns. Every key is always present; a value the page
-    doesn't declare is ``None`` or an empty list. URLs are absolute, dates ISO 8601."""
+    doesn't declare is ``None`` or an empty list. URLs are absolute, dates ISO 8601.
 
+    ``final_url`` is the address the page ended on, after its redirects; the
+    page's relative URLs are resolved against it."""
+
+    final_url: Optional[str]
     canonical_url: Optional[str]
     title: Optional[str]
     description: Optional[str]
@@ -161,6 +165,7 @@ class ScrapeResult(TypedDict):
     """
 
     url: str
+    final_url: Optional[str]
     operations: Dict[str, ScrapeOperationResult]
 
 
@@ -188,6 +193,7 @@ class ResponseMeta:
     quota: Quota = field(default_factory=Quota)
     concurrency_limit: Union[int, str, None] = None
     result_url: Optional[str] = None
+    final_url: Optional[str] = None
     idempotent_replayed: bool = False
 
 

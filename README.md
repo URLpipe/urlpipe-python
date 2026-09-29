@@ -37,7 +37,7 @@ Every method waits for the result and returns a `Response`:
 | `data` | the result, typed per operation; `None` unless completed |
 | `token` | the request's token — fetch the result again for free with `client.result(token)` |
 | `labels` | the labels the request was made with |
-| `meta` | `cache`, `cache_age`, `processing_time_ms`, `quota` (`cost`, `limit`, `remaining`, `overage`, `resets_at`), `concurrency_limit`, `result_url`, `idempotent_replayed` |
+| `meta` | `cache`, `cache_age`, `processing_time_ms`, `quota` (`cost`, `limit`, `remaining`, `overage`, `resets_at`), `concurrency_limit`, `result_url`, `final_url` (where the page ended up, after its redirects), `idempotent_replayed` |
 
 ```python
 page.meta.cache             # "hit" — served from cache, cost nothing
@@ -166,7 +166,7 @@ def urlpipe_webhook():
 
 Give it the **raw request body** exactly as received (`request.get_data()` in Flask, `await request.body()` in FastAPI, `request.body` in Django). Parsed and re-serialised JSON has different bytes, and the signature will not match. Header names are matched case-insensitively; deliveries signed more than `tolerance` seconds ago (300 by default) are refused, and during a secret rotation either signature is accepted.
 
-It returns the payload: `token`, `operation`, `labels`, `success`, `result`, `result_url`, `error` and `meta`.
+It returns the payload: `token`, `operation`, `labels`, `success`, `result`, `result_url`, `final_url`, `error` and `meta`.
 
 ## Errors
 

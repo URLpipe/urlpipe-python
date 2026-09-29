@@ -17,6 +17,7 @@ PAYLOAD = {
     "success": True,
     "result": "# Example Domain",
     "result_url": None,
+    "final_url": "https://example.com/",
     "error": None,
     "meta": {"cache": "miss", "cache_age": None, "processing_time_ms": 4182, "quota": {}},
 }
