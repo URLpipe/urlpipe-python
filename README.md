@@ -1,6 +1,6 @@
 # urlpipe
 
-Turn any URL into clean Markdown, rendered HTML, a full-page screenshot, metadata, a summary, keywords, console errors or a Lighthouse audit — from Python, in one call. Pages are rendered in real Chrome, so JavaScript-heavy sites come back complete.
+Turn any URL into clean Markdown, rendered HTML, a full-page screenshot, metadata, a summary, keywords, console errors, a Lighthouse audit or the technologies it is built with — from Python, in one call. Pages are rendered in real Chrome, so JavaScript-heavy sites come back complete.
 
 This is the official Python client for the [URLpipe API](https://urlpipe.dev/docs). It works sync or async, is fully typed, and depends only on `httpx`.
 
@@ -55,6 +55,7 @@ client.summarize("https://example.com").data     # str: an AI summary, in Markdo
 client.meta("https://example.com").data          # dict: title, description, image, authors, published_at, …
 client.keywords("https://example.com").data      # list[str], most relevant first
 client.console("https://example.com").data       # [{"type": "error", "text": "…"}, …]
+client.technologies("https://example.com").data  # dict: {"final_url", "technologies": [{"name", "version", …}]}
 client.lighthouse("https://example.com", device="desktop", include_audits=True).data
 ```
 

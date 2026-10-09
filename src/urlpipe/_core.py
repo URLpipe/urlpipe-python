@@ -42,7 +42,7 @@ MAX_RETRY_AFTER = 60.0
 RATE_LIMIT_FALLBACK = 1.0
 
 TEXT_OPERATIONS = frozenset({"markdown", "html", "summarize"})
-JSON_OPERATIONS = frozenset({"meta", "keywords", "console", "lighthouse", "scrape"})
+JSON_OPERATIONS = frozenset({"meta", "keywords", "console", "technologies", "lighthouse", "scrape"})
 RETRYABLE_STATUSES = frozenset({500, 502, 503})
 INVALID_REQUEST_CODES = frozenset(
     {

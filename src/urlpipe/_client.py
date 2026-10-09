@@ -17,7 +17,7 @@ import httpx
 
 from . import _core
 from ._core import AnalysisCall, Config, Flow, HttpRequest, Sleep
-from ._models import ConsoleEntry, Operation, PageMeta, Response, ScrapeResult, Screenshot
+from ._models import ConsoleEntry, Operation, PageMeta, Response, ScrapeResult, Screenshot, Technologies
 from .errors import ConfigurationError
 
 MaxAge = Union[int, str]
@@ -314,6 +314,25 @@ class Client(_BaseClient):
             residential=residential, report_to=report_to, page_options=page_options,
         ))
 
+    def technologies(
+        self,
+        url: str,
+        *,
+        sync: bool = True,
+        max_age: Optional[MaxAge] = None,
+        labels: Optional[Labels] = None,
+        residential: Optional[bool] = None,
+        report_to: Optional[str] = None,
+        page_options: Optional[Options] = None,
+        idempotency_key: Optional[str] = None,
+        extra: Optional[Options] = None,
+    ) -> Response[Technologies]:
+        """What a page is built with: its CMS, frameworks, analytics, CDN, with versions."""
+        return self._drive(self._analysis(
+            "technologies", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
+            residential=residential, report_to=report_to, page_options=page_options,
+        ))
+
     def lighthouse(
         self,
         url: str,
@@ -586,6 +605,25 @@ class AsyncClient(_BaseClient):
         """The console errors, warnings and uncaught exceptions of a page load."""
         return await self._drive(self._analysis(
             "console", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
+            residential=residential, report_to=report_to, page_options=page_options,
+        ))
+
+    async def technologies(
+        self,
+        url: str,
+        *,
+        sync: bool = True,
+        max_age: Optional[MaxAge] = None,
+        labels: Optional[Labels] = None,
+        residential: Optional[bool] = None,
+        report_to: Optional[str] = None,
+        page_options: Optional[Options] = None,
+        idempotency_key: Optional[str] = None,
+        extra: Optional[Options] = None,
+    ) -> Response[Technologies]:
+        """What a page is built with: its CMS, frameworks, analytics, CDN, with versions."""
+        return await self._drive(self._analysis(
+            "technologies", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
             residential=residential, report_to=report_to, page_options=page_options,
         ))
 

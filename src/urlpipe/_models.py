@@ -17,6 +17,7 @@ Operation = Literal[
     "meta",
     "keywords",
     "console",
+    "technologies",
     "lighthouse",
     "scrape",
 ]
@@ -30,6 +31,35 @@ class ConsoleEntry(TypedDict):
 
     type: Literal["error", "warning", "exception"]
     text: str
+
+
+class TechnologyCategory(TypedDict):
+    """A kind of technology: ``{"slug": "cms", "name": "CMS"}``."""
+
+    slug: str
+    name: str
+
+
+class Technology(TypedDict):
+    """One technology a page is built with."""
+
+    name: str
+    slug: str
+    version: Optional[str]
+    confidence: int
+    categories: List[TechnologyCategory]
+    website: Optional[str]
+    description: Optional[str]
+    cpe: Optional[str]
+    detected_by: List[str]
+    implied_by: List[str]
+
+
+class Technologies(TypedDict):
+    """The ``/technologies`` result: every technology detected, most certain first."""
+
+    final_url: Optional[str]
+    technologies: List[Technology]
 
 
 class MetaAuthor(TypedDict):
@@ -248,5 +278,8 @@ __all__ = [
     "ResponseStatus",
     "ScrapeOperationResult",
     "ScrapeResult",
+    "Technologies",
+    "Technology",
+    "TechnologyCategory",
     "Screenshot",
 ]

@@ -32,6 +32,9 @@ from ._models import (
     ScrapeOperationResult,
     ScrapeResult,
     Screenshot,
+    Technologies,
+    Technology,
+    TechnologyCategory,
 )
 from ._version import __version__
 from .errors import (
@@ -87,6 +90,9 @@ __all__ = [
     "Screenshot",
     "ServerError",
     "StaleResultError",
+    "Technologies",
+    "Technology",
+    "TechnologyCategory",
     "UrlpipeError",
     "WaitTimeoutError",
     "WebhookVerificationError",

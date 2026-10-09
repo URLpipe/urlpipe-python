@@ -108,6 +108,26 @@ def test_text_operations(client: Any, server: StubServer, operation: str) -> Non
         ),
         ("keywords", ["example domain", "documentation"]),
         ("console", [{"type": "error", "text": "boom"}, {"type": "exception", "text": "x"}]),
+        (
+            "technologies",
+            {
+                "final_url": "https://example.com/",
+                "technologies": [
+                    {
+                        "name": "WordPress",
+                        "slug": "wordpress",
+                        "version": "6.4.2",
+                        "confidence": 100,
+                        "categories": [{"slug": "cms", "name": "CMS"}],
+                        "website": "https://wordpress.org",
+                        "description": None,
+                        "cpe": None,
+                        "detected_by": ["meta"],
+                        "implied_by": []
+                    }
+                ]
+            },
+        ),
         ("lighthouse", {"url": "https://example.com", "categories": {"seo": {"score": 0.9}}}),
     ],
 )
