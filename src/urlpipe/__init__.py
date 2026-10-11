@@ -1,6 +1,7 @@
 """The official Python client for the URLpipe API: turn a URL into Markdown,
-HTML, a screenshot, metadata, a summary, keywords, console errors or a
-Lighthouse audit.
+HTML, a screenshot, a PDF, metadata, a summary, keywords, data in a schema you
+define, console errors, a Lighthouse audit or the technologies a site is built
+with.
 
     import urlpipe
 
@@ -25,6 +26,7 @@ from ._models import (
     MetaVideo,
     Operation,
     PageMeta,
+    Pdf,
     Quota,
     Response,
     ResponseMeta,
@@ -79,6 +81,7 @@ __all__ = [
     "NotFoundError",
     "Operation",
     "PageMeta",
+    "Pdf",
     "Quota",
     "QuotaExceededError",
     "RateLimitedError",

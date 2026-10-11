@@ -21,7 +21,7 @@ from urllib.parse import quote
 import httpx
 
 from . import errors
-from ._models import Quota, Response, ResponseMeta, Screenshot
+from ._models import Pdf, Quota, Response, ResponseMeta, Screenshot
 from ._version import __version__
 
 DEFAULT_BASE_URL = "https://urlpipe.dev"
@@ -42,7 +42,7 @@ MAX_RETRY_AFTER = 60.0
 RATE_LIMIT_FALLBACK = 1.0
 
 TEXT_OPERATIONS = frozenset({"markdown", "html", "summarize"})
-JSON_OPERATIONS = frozenset({"meta", "keywords", "console", "technologies", "lighthouse", "scrape"})
+JSON_OPERATIONS = frozenset({"meta", "keywords", "extract", "console", "technologies", "lighthouse", "scrape"})
 RETRYABLE_STATUSES = frozenset({500, 502, 503})
 INVALID_REQUEST_CODES = frozenset(
     {
@@ -249,12 +249,20 @@ def detect_mime(data: bytes) -> str:
     return "image/png"
 
 
-def decode_screenshot(text: str, result_url: Optional[str]) -> Screenshot:
+def _decode_base64(text: str, what: str) -> bytes:
     try:
-        data = base64.b64decode("".join(text.split()), validate=True)
+        return base64.b64decode("".join(text.split()), validate=True)
     except (binascii.Error, ValueError) as exc:
-        raise errors.UrlpipeError(f"The screenshot body is not valid Base64: {exc}") from exc
+        raise errors.UrlpipeError(f"The {what} body is not valid Base64: {exc}") from exc
+
+
+def decode_screenshot(text: str, result_url: Optional[str]) -> Screenshot:
+    data = _decode_base64(text, "screenshot")
     return Screenshot(data=data, mime_type=detect_mime(data), result_url=result_url)
+
+
+def decode_pdf(text: str, result_url: Optional[str]) -> Pdf:
+    return Pdf(data=_decode_base64(text, "PDF"), result_url=result_url)
 
 
 def decode_data(operation: Optional[str], resp: httpx.Response, meta: ResponseMeta) -> Any:
@@ -263,6 +271,8 @@ def decode_data(operation: Optional[str], resp: httpx.Response, meta: ResponseMe
         return resp.text
     if operation == "screenshot":
         return decode_screenshot(resp.text, meta.result_url)
+    if operation == "pdf":
+        return decode_pdf(resp.text, meta.result_url)
     content_type = resp.headers.get("content-type", "")
     # Without a hint, go by content type.
     if operation in JSON_OPERATIONS or (operation is None and "json" in content_type):

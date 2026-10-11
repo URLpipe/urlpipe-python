@@ -14,8 +14,10 @@ Operation = Literal[
     "html",
     "summarize",
     "screenshot",
+    "pdf",
     "meta",
     "keywords",
+    "extract",
     "console",
     "technologies",
     "lighthouse",
@@ -191,7 +193,8 @@ class ScrapeOperationResult(TypedDict, total=False):
 class ScrapeResult(TypedDict):
     """What ``/scrape`` returns: one entry per requested operation.
 
-    A screenshot inside a scrape stays Base64 text, exactly as the API sends it.
+    A screenshot or a PDF inside a scrape stays Base64 text, exactly as the API
+    sends it.
     """
 
     url: str
@@ -248,6 +251,26 @@ class Screenshot:
 
 
 @dataclass(frozen=True)
+class Pdf:
+    """A decoded PDF of the page."""
+
+    data: bytes = field(repr=False)
+    mime_type: str = "application/pdf"
+    result_url: Optional[str] = None
+
+    @property
+    def size(self) -> int:
+        """The PDF size in bytes."""
+        return len(self.data)
+
+    def save(self, path: Union[str, "os.PathLike[str]"]) -> Path:
+        """Write the PDF to ``path`` and return it as a ``Path``."""
+        target = Path(path)
+        target.write_bytes(self.data)
+        return target
+
+
+@dataclass(frozen=True)
 class Response(Generic[T]):
     """What every client method returns.
 
@@ -272,6 +295,7 @@ __all__ = [
     "ConsoleEntry",
     "Operation",
     "PageMeta",
+    "Pdf",
     "Quota",
     "Response",
     "ResponseMeta",

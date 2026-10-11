@@ -1,6 +1,6 @@
 # urlpipe
 
-Turn any URL into clean Markdown, rendered HTML, a full-page screenshot, metadata, a summary, keywords, console errors, a Lighthouse audit or the technologies it is built with — from Python, in one call. Pages are rendered in real Chrome, so JavaScript-heavy sites come back complete.
+Turn any URL into clean Markdown, rendered HTML, a full-page screenshot, a PDF, metadata, a summary, keywords, data in a schema you define, console errors, a Lighthouse audit or the technologies it is built with — from Python, in one call. Pages are rendered in real Chrome, so JavaScript-heavy sites come back complete.
 
 This is the official Python client for the [URLpipe API](https://urlpipe.dev/docs). It works sync or async, is fully typed, and depends only on `httpx`.
 
@@ -73,6 +73,40 @@ shot.result_url   # a link to the image that needs no API key, for an <img> tag
 shot.data         # the decoded bytes
 ```
 
+### PDFs
+
+```python
+pdf = client.pdf(
+    "https://example.com/invoice",
+    pdf_options={"paper_size": "letter", "landscape": True},
+).data
+
+pdf.save("invoice.pdf")
+pdf.result_url   # a link to the PDF that needs no API key
+pdf.data         # the decoded bytes
+```
+
+### Data in your own schema
+
+Describe the fields you want and `extract` returns exactly those keys, in that order, with `None` where the page gives no value.
+
+```python
+product = client.extract(
+    "https://example.com/products/trail-shoe",
+    [
+        {"name": "name", "type": "string"},
+        {"name": "price", "type": "number", "description": "The current price, without the currency"},
+        {"name": "in_stock", "type": "boolean"},
+        {"name": "sizes", "type": "array", "items": "string"},
+    ],
+    instructions="Ignore the related products.",
+).data
+
+product["price"]  # 89.5
+```
+
+A field's `type` is `string`, `number`, `integer`, `boolean`, `date`, `datetime`, `url`, `email`, `object` (with its own `fields`) or `array` (with `items`).
+
 ### Several operations off one page visit
 
 ```python
@@ -80,7 +114,7 @@ result = client.scrape("https://example.com", ["markdown", "meta", "screenshot"]
 result["operations"]["meta"]["result"]["title"]
 ```
 
-Each operation has its own `success`, `result`, `error` and `cached`; one failing never affects the others. A screenshot inside a scrape is Base64 text, as the API returns it.
+Each operation has its own `success`, `result`, `error` and `cached`; one failing never affects the others. A screenshot or a PDF inside a scrape is Base64 text, as the API returns it. `scrape` takes `screenshot_options`, `pdf_options`, and `fields` and `instructions` for its `extract` operation.
 
 ### Options every method takes
 
@@ -117,7 +151,7 @@ report.data["categories"]["performance"]["score"]
 
 `client.result(token)` makes a single check instead: it returns a `"processing"` Response while the work is running.
 
-`GET /result` does not say which operation made a token, so pass `operation=` to get typed `data`. Without it, JSON comes back parsed and text as a string — a screenshot stays Base64 until you ask for `wait(token, operation="screenshot")`.
+`GET /result` does not say which operation made a token, so pass `operation=` to get typed `data`. Without it, JSON comes back parsed and text as a string — a screenshot or a PDF stays Base64 until you ask for `wait(token, operation="screenshot")` or `operation="pdf"`.
 
 A synchronous call that runs past the API's 60-second window is not an error: the client polls for the result itself and returns it, for up to `wait_timeout` seconds (5 minutes by default) before raising `WaitTimeoutError`. The work keeps running either way, so `client.wait(error.token)` picks it up later.
 

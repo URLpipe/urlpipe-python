@@ -12,6 +12,7 @@ from conftest import API_KEY, META_HEADERS, StubServer
 PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 16
 JPEG = b"\xff\xd8\xff\xe0" + b"\x00" * 16
 WEBP = b"RIFF\x24\x00\x00\x00WEBPVP8 " + b"\x00" * 16
+PDF = b"%PDF-1.4\n" + b"\x00" * 16
 
 
 def assert_standard_request(server: StubServer, path: str) -> dict:
@@ -162,6 +163,9 @@ def test_scrape(client: Any, server: StubServer) -> None:
         device="desktop",
         include_audits=True,
         screenshot_options={"format": "webp"},
+        pdf_options={"landscape": True},
+        fields=[{"name": "price", "type": "number"}],
+        instructions="Prices in euros.",
     )
 
     assert assert_standard_request(server, "/scrape") == {
@@ -170,6 +174,9 @@ def test_scrape(client: Any, server: StubServer) -> None:
         "device": "desktop",
         "include_audits": True,
         "screenshot_options": {"format": "webp"},
+        "pdf_options": {"landscape": True},
+        "fields": [{"name": "price", "type": "number"}],
+        "instructions": "Prices in euros.",
         "sync": True,
     }
     assert response.data == payload
@@ -358,6 +365,67 @@ def test_screenshot_is_decoded(client: Any, server: StubServer, image: bytes, mi
     assert shot.mime_type == mime
     assert shot.result_url == "https://cdn.urlpipe.dev/s/abc.png"
     assert response.meta.result_url == "https://cdn.urlpipe.dev/s/abc.png"
+
+
+def test_pdf_is_decoded(client: Any, server: StubServer) -> None:
+    encoded = base64.b64encode(PDF).decode()
+    server.reply(
+        200,
+        encoded[:10] + "\n" + encoded[10:] + "\n",
+        headers={**META_HEADERS, "X-Result-Url": "https://cdn.urlpipe.dev/s/abc.pdf"},
+    )
+
+    response = client.pdf("https://example.com", pdf_options={"paper_size": "letter"})
+
+    assert assert_standard_request(server, "/pdf") == {
+        "url": "https://example.com",
+        "pdf_options": {"paper_size": "letter"},
+        "sync": True,
+    }
+    pdf = response.data
+    assert isinstance(pdf, urlpipe.Pdf)
+    assert pdf.data == PDF
+    assert pdf.size == len(PDF)
+    assert pdf.mime_type == "application/pdf"
+    assert pdf.result_url == "https://cdn.urlpipe.dev/s/abc.pdf"
+    assert response.meta.result_url == "https://cdn.urlpipe.dev/s/abc.pdf"
+
+
+def test_pdf_save(tmp_path: Any) -> None:
+    pdf = urlpipe.Pdf(data=PDF)
+    path = pdf.save(tmp_path / "page.pdf")
+    assert path.read_bytes() == PDF
+    assert "data=" not in repr(pdf)
+
+
+def test_result_with_pdf_hint_decodes(client: Any, server: StubServer) -> None:
+    server.reply(200, base64.b64encode(PDF).decode(), headers={"X-Result-Url": "https://u/x"})
+    pdf = client.result("tok", operation="pdf").data
+    assert pdf.data == PDF
+    assert pdf.result_url == "https://u/x"
+
+
+def test_extract(client: Any, server: StubServer) -> None:
+    fields = [
+        {"name": "name", "type": "string", "description": "The product's name"},
+        {"name": "price", "type": "number"},
+        {"name": "sizes", "type": "array", "items": "string"},
+    ]
+    payload = {"name": "Trail Shoe", "price": 89.5, "sizes": None}
+    server.reply(200, payload, headers=META_HEADERS)
+
+    response = client.extract(
+        "https://example.com/shoe", fields, instructions="Prices in euros."
+    )
+
+    assert assert_standard_request(server, "/extract") == {
+        "url": "https://example.com/shoe",
+        "fields": fields,
+        "instructions": "Prices in euros.",
+        "sync": True,
+    }
+    assert response.data == payload
+    assert list(response.data) == ["name", "price", "sizes"]
 
 
 def test_screenshot_save(tmp_path: Any) -> None:

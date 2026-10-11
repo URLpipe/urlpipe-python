@@ -17,12 +17,22 @@ import httpx
 
 from . import _core
 from ._core import AnalysisCall, Config, Flow, HttpRequest, Sleep
-from ._models import ConsoleEntry, Operation, PageMeta, Response, ScrapeResult, Screenshot, Technologies
+from ._models import (
+    ConsoleEntry,
+    Operation,
+    PageMeta,
+    Pdf,
+    Response,
+    ScrapeResult,
+    Screenshot,
+    Technologies,
+)
 from .errors import ConfigurationError
 
 MaxAge = Union[int, str]
 Labels = Mapping[str, str]
 Options = Mapping[str, Any]
+Fields = Sequence[Mapping[str, Any]]
 
 _C = TypeVar("_C", bound="Client")
 _A = TypeVar("_A", bound="AsyncClient")
@@ -257,6 +267,27 @@ class Client(_BaseClient):
             screenshot_options=screenshot_options,
         ))
 
+    def pdf(
+        self,
+        url: str,
+        *,
+        pdf_options: Optional[Options] = None,
+        sync: bool = True,
+        max_age: Optional[MaxAge] = None,
+        labels: Optional[Labels] = None,
+        residential: Optional[bool] = None,
+        report_to: Optional[str] = None,
+        page_options: Optional[Options] = None,
+        idempotency_key: Optional[str] = None,
+        extra: Optional[Options] = None,
+    ) -> Response[Pdf]:
+        """The whole rendered page as a PDF, decoded to bytes."""
+        return self._drive(self._analysis(
+            "pdf", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
+            residential=residential, report_to=report_to, page_options=page_options,
+            pdf_options=pdf_options,
+        ))
+
     def meta(
         self,
         url: str,
@@ -293,6 +324,29 @@ class Client(_BaseClient):
         return self._drive(self._analysis(
             "keywords", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
             residential=residential, report_to=report_to, page_options=page_options,
+        ))
+
+    def extract(
+        self,
+        url: str,
+        fields: Fields,
+        *,
+        instructions: Optional[str] = None,
+        sync: bool = True,
+        max_age: Optional[MaxAge] = None,
+        labels: Optional[Labels] = None,
+        residential: Optional[bool] = None,
+        report_to: Optional[str] = None,
+        page_options: Optional[Options] = None,
+        idempotency_key: Optional[str] = None,
+        extra: Optional[Options] = None,
+    ) -> Response[Dict[str, Any]]:
+        """Data from the page in the schema ``fields`` describes: one key per
+        field, in order, ``None`` where the page gives no value."""
+        return self._drive(self._analysis(
+            "extract", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
+            residential=residential, report_to=report_to, page_options=page_options,
+            fields=fields, instructions=instructions,
         ))
 
     def console(
@@ -362,6 +416,9 @@ class Client(_BaseClient):
         device: Optional[str] = None,
         include_audits: Optional[bool] = None,
         screenshot_options: Optional[Options] = None,
+        pdf_options: Optional[Options] = None,
+        fields: Optional[Fields] = None,
+        instructions: Optional[str] = None,
         sync: bool = True,
         max_age: Optional[MaxAge] = None,
         labels: Optional[Labels] = None,
@@ -376,7 +433,8 @@ class Client(_BaseClient):
             "scrape", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
             residential=residential, report_to=report_to, page_options=page_options,
             operations=_operations(operations), device=device, include_audits=include_audits,
-            screenshot_options=screenshot_options,
+            screenshot_options=screenshot_options, pdf_options=pdf_options,
+            fields=fields, instructions=instructions,
         ))
 
     def result(self, token: str, *, operation: Optional[Operation] = None) -> Response[Any]:
@@ -396,8 +454,8 @@ class Client(_BaseClient):
 
         Raises :class:`urlpipe.WaitTimeoutError` after ``timeout`` seconds
         (default: the client's ``wait_timeout``). Pass the original
-        ``operation`` to type ``data`` — ``operation="screenshot"`` decodes the
-        image, which otherwise stays Base64 text.
+        ``operation`` to type ``data`` — ``operation="screenshot"`` or ``"pdf"``
+        decodes the file, which otherwise stays Base64 text.
         """
         return self._drive(self._wait(token, operation, timeout, interval))
 
@@ -551,6 +609,27 @@ class AsyncClient(_BaseClient):
             screenshot_options=screenshot_options,
         ))
 
+    async def pdf(
+        self,
+        url: str,
+        *,
+        pdf_options: Optional[Options] = None,
+        sync: bool = True,
+        max_age: Optional[MaxAge] = None,
+        labels: Optional[Labels] = None,
+        residential: Optional[bool] = None,
+        report_to: Optional[str] = None,
+        page_options: Optional[Options] = None,
+        idempotency_key: Optional[str] = None,
+        extra: Optional[Options] = None,
+    ) -> Response[Pdf]:
+        """The whole rendered page as a PDF, decoded to bytes."""
+        return await self._drive(self._analysis(
+            "pdf", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
+            residential=residential, report_to=report_to, page_options=page_options,
+            pdf_options=pdf_options,
+        ))
+
     async def meta(
         self,
         url: str,
@@ -587,6 +666,29 @@ class AsyncClient(_BaseClient):
         return await self._drive(self._analysis(
             "keywords", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
             residential=residential, report_to=report_to, page_options=page_options,
+        ))
+
+    async def extract(
+        self,
+        url: str,
+        fields: Fields,
+        *,
+        instructions: Optional[str] = None,
+        sync: bool = True,
+        max_age: Optional[MaxAge] = None,
+        labels: Optional[Labels] = None,
+        residential: Optional[bool] = None,
+        report_to: Optional[str] = None,
+        page_options: Optional[Options] = None,
+        idempotency_key: Optional[str] = None,
+        extra: Optional[Options] = None,
+    ) -> Response[Dict[str, Any]]:
+        """Data from the page in the schema ``fields`` describes: one key per
+        field, in order, ``None`` where the page gives no value."""
+        return await self._drive(self._analysis(
+            "extract", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
+            residential=residential, report_to=report_to, page_options=page_options,
+            fields=fields, instructions=instructions,
         ))
 
     async def console(
@@ -656,6 +758,9 @@ class AsyncClient(_BaseClient):
         device: Optional[str] = None,
         include_audits: Optional[bool] = None,
         screenshot_options: Optional[Options] = None,
+        pdf_options: Optional[Options] = None,
+        fields: Optional[Fields] = None,
+        instructions: Optional[str] = None,
         sync: bool = True,
         max_age: Optional[MaxAge] = None,
         labels: Optional[Labels] = None,
@@ -670,7 +775,8 @@ class AsyncClient(_BaseClient):
             "scrape", url, idempotency_key, extra, sync=sync, max_age=max_age, labels=labels,
             residential=residential, report_to=report_to, page_options=page_options,
             operations=_operations(operations), device=device, include_audits=include_audits,
-            screenshot_options=screenshot_options,
+            screenshot_options=screenshot_options, pdf_options=pdf_options,
+            fields=fields, instructions=instructions,
         ))
 
     async def result(self, token: str, *, operation: Optional[Operation] = None) -> Response[Any]:

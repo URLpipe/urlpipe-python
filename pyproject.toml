@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "urlpipe"
 dynamic = ["version"]
-description = "Official Python client for the URLpipe API: turn a URL into Markdown, HTML, a screenshot, metadata, a summary, keywords, console errors or a Lighthouse audit."
+description = "Official Python client for the URLpipe API: turn a URL into Markdown, HTML, a screenshot, a PDF, metadata, a summary, keywords, structured data, console errors or a Lighthouse audit."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
