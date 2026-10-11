@@ -104,7 +104,7 @@ class Config:
 
 def user_agent(product: Optional[str]) -> str:
     """The User-Agent: the calling program's product token, when given, in
-    front of the client's own, as in ``my-app/1.2 urlpipe-python/0.2.0``."""
+    front of the client's own, as in ``my-app/1.2 urlpipe-python/0.3.0``."""
     product = (product or "").strip()
     return f"{product} {USER_AGENT}" if product else USER_AGENT
 

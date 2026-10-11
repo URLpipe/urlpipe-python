@@ -123,7 +123,7 @@ class Client(_BaseClient):
             keeps polling for its result, and the default for :meth:`wait`.
         user_agent: your program's product token, such as ``"my-app/1.2"``.
             It goes in front of the client's own, so requests identify both:
-            ``my-app/1.2 urlpipe-python/0.2.0``.
+            ``my-app/1.2 urlpipe-python/0.3.0``.
         http_client: an ``httpx.Client`` to send requests with. You keep
             ownership: :meth:`close` leaves it open.
     """

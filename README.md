@@ -238,7 +238,7 @@ A failed analysis costs nothing, and neither does a cache hit.
 If you build a library or a tool on this client, pass its name, and your requests carry both:
 
 ```python
-client = urlpipe.Client(user_agent="my-tool/1.4")  # User-Agent: my-tool/1.4 urlpipe-python/0.2.0
+client = urlpipe.Client(user_agent="my-tool/1.4")  # User-Agent: my-tool/1.4 urlpipe-python/0.3.0
 ```
 
 ## Retries and idempotency

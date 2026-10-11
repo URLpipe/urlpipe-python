@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - `pdf` returns the whole rendered page as a PDF (`POST /pdf`), decoded to bytes: a `Pdf` with `data`, `mime_type`, `result_url` and `save`. `pdf_options` choose the paper, orientation, margins, scale, backgrounds, the print or screen stylesheet and `single_page`.
 - `extract` returns data from a page in a schema you define (`POST /extract`): pass `fields` and get a dict with exactly those keys, in order, `None` where the page gives no value. `instructions` adds guidance in plain words.
